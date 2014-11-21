@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <string name="app_name">Music Pad</string>
+  <string name="song_title_hint">Enter a title for this song.</string>
+  <string name="song_title_label">Title</string> 
+  <string name="song_details_label">Details</string> 
+  <string name="song_solved_label">Solved?</string>
+  <string name="date_picker_title">Date Recorded:</string>
+  <string name="songs_title">Songs</string>
+  <string name="new_song">New Song</string>
+  <string name="show_subtitle">Show Subtitle</string>
+  <string name="hide_subtitle">Hide Subtitle</string> 
+  <string name="subtitle">Sometimes tolerance is not a virtue.</string>
+  <string name="recording">Recording</string>
+  <string name="play">Play</string>
+  <string name="record">Record</string>
+  <string name="stop">Stop</string>
+  
+</resources>
