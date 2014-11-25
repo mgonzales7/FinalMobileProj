@@ -6,6 +6,7 @@ import java.util.UUID;
 public class Song {
     private UUID mId;
     private String mTitle;
+    private String mAudioPath;
     private Date mDate;
     private boolean mSolved;
 
@@ -46,6 +47,14 @@ public class Song {
     public void setDate(Date date) {
         mDate = date;
     }
+
+	public String getAudioPath() {
+		return mAudioPath;
+	}
+
+	public void setAudioPath(String audioPath) {
+		mAudioPath = audioPath;
+	}
 
 
 }
