@@ -89,7 +89,7 @@ public class SongFragment extends Fragment {
         //enable the home-as-up button.
         //This enabled icon is treated as an existing option menu item. 
         
-        mAudioPath=mSong.getAudioPath();
+        //mAudioPath=mSong.getAudioPath(); Not needed
         mTitleField = (EditText)v.findViewById(R.id.song_title);
         mTitleField.setText(mSong.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
@@ -98,7 +98,6 @@ public class SongFragment extends Fragment {
                 mAudioPath=Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+c.toString()
                         + ".3gp";
                 Log.i(TAG, c.toString());
-                //TODO: FIX BUG HERE
                 mSong.setAudioPath(mAudioPath);
             }
 
@@ -235,7 +234,7 @@ public class SongFragment extends Fragment {
     //	stopButton.setEnabled(true);
 
     	mMediaPlayer = new MediaPlayer();
-    	mMediaPlayer.setDataSource(mAudioPath);
+    	mMediaPlayer.setDataSource(mSong.getAudioPath());
     	mMediaPlayer.prepare();
     	mMediaPlayer.start();
     }
