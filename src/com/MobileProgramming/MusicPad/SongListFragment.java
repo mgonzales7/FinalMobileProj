@@ -21,7 +21,7 @@ import android.widget.TextView;
 public class SongListFragment extends ListFragment {
     private ArrayList<Song> mSongs;
     
-    private boolean mSubtitleVisible;
+    //private boolean mSubtitleVisible;
     //Keeps track the visibility status of the subtitle. 
     
     @Override
@@ -41,7 +41,7 @@ public class SongListFragment extends ListFragment {
         setRetainInstance(true);
         
         //a variable to keep track of the visibility state of the subtitle. 
-        mSubtitleVisible = false;
+        //mSubtitleVisible = false;
         
     }
     
@@ -53,9 +53,9 @@ public class SongListFragment extends ListFragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {   
         	
         		//If the user rotates the device, we still need to keep the visibility status of the subtitle. 
-            if (mSubtitleVisible) {
-                getActivity().getActionBar().setSubtitle(R.string.subtitle);
-            }
+           // if (mSubtitleVisible) {
+           //     getActivity().getActionBar().setSubtitle(R.string.subtitle);
+           // }
         }
         
         return v;
@@ -89,11 +89,11 @@ public class SongListFragment extends ListFragment {
         //
 		//If the user rotates the device, we still need to keep the visibility status of the subtitle, 
         // and set the correct text on the subtitle. 
-        MenuItem showSubtitle = menu.findItem(R.id.menu_item_show_subtitle);
+        //MenuItem showSubtitle = menu.findItem(R.id.menu_item_show_subtitle);
         
-        if (mSubtitleVisible && showSubtitle != null) {
-            showSubtitle.setTitle(R.string.hide_subtitle);
-        }
+       // if (mSubtitleVisible && showSubtitle != null) {
+        //    showSubtitle.setTitle(R.string.hide_subtitle);
+       // }
     }
 
     //---- method to handle options menu ---
@@ -114,7 +114,7 @@ public class SongListFragment extends ListFragment {
                 startActivityForResult(i, 0);
                 return true;
                 
-            case R.id.menu_item_show_subtitle :
+           /* case R.id.menu_item_show_subtitle :
             		//We want to show different menu text, depending on whether subtitle is currently displayed or not. 
             		//
             		//In case the user put the phone in landscape mode, 
@@ -128,7 +128,7 @@ public class SongListFragment extends ListFragment {
 	            		 mSubtitleVisible = false;
 	            		item.setTitle(R.string.show_subtitle);
 	            	}
-                return true;
+                return true;*/
             
             default:
                 return super.onOptionsItemSelected(item);

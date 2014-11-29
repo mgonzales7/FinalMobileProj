@@ -19,7 +19,6 @@ public final class R {
         public static final int dialog_date_datePicker=0x7f040002;
         public static final int fragmentContainer=0x7f040001;
         public static final int menu_item_new_song=0x7f04000a;
-        public static final int menu_item_show_subtitle=0x7f04000b;
         public static final int playButton=0x7f040006;
         public static final int recordButton=0x7f040005;
         public static final int song_date=0x7f040004;
