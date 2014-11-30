@@ -39,13 +39,7 @@ public class SongFragment extends Fragment {
     Button mRecordButton;
     Button mStopButton;
     Button mPlayButton;
-    /*MediaRecorder mediaRecorder = new MediaRecorder();
-
-
-    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-    mediaRecorder.setOutputFile(audioFilePath);*/
+    
 
     public static SongFragment newInstance(UUID songId) {
         Bundle args = new Bundle();

@@ -1,14 +1,14 @@
 package com.MobileProgramming.MusicPad;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Song {
+public class Song implements Serializable{
     private UUID mId;
     private String mTitle;
     private String mAudioPath;
     private Date mDate;
-    private boolean mSolved;
 
     public Song() {
         mId = UUID.randomUUID();
@@ -16,7 +16,7 @@ public class Song {
     }
 
     @Override
-    public String toString() {
+   public String toString() {
         return mTitle;
     }
 
@@ -30,14 +30,6 @@ public class Song {
 
     public UUID getId() {
         return mId;
-    }
-
-    public boolean isSolved() {
-        return mSolved;
-    }
-
-    public void setSolved(boolean solved) {
-        mSolved = solved;
     }
 
     public Date getDate() {

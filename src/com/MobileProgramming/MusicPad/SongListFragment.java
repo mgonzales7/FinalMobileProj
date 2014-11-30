@@ -161,5 +161,13 @@ public class SongListFragment extends ListFragment {
             return convertView;
         }
     }
+    
+    private void storeListData(ArrayList<Song> songList) {
+    	
+    }
+    
+    private void loadListData(ArrayList<Song> songList) {
+    	
+    }
 }
 
