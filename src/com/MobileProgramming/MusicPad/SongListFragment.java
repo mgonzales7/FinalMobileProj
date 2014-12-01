@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +20,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class SongListFragment extends ListFragment {
-    private ArrayList<Song> mSongs;
+    private ArrayList<Song> mSongs = new ArrayList<Song>();//initialize into nothing;
+    public static final String PREFS_NAME = "SONG_APP";
+    public static final String LIST_OF_SONGS = "List_of_Songs";
+    SaveDataList saveDataList = new SaveDataList();
     
     //private boolean mSubtitleVisible;
     //Keeps track the visibility status of the subtitle. 
@@ -27,14 +31,31 @@ public class SongListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        Log.d("keyHere", "onCreate() called");
         setHasOptionsMenu(true); 
         //FragmentManager is responsible for calling onCreateOptionsMenu()
         //IMPORTANT. Tell FragmentManager that my CrimeListFragment needs to receive options menu callbacks
         // e.g. onCreateOptionsMenu(). 
         
         getActivity().setTitle(R.string.songs_title);
-        mSongs = SongLab.get(getActivity()).getSongs();
+       /* mSongs = saveDataList.getSavedList(getActivity(), PREFS_NAME, LIST_OF_SONGS);
+        try {
+        	if(mSongs != null)
+        		for(int i = 0; i < mSongs.size(); i++)
+        			Log.d("keyHere",mSongs.get(i).getTitle());
+        } catch(NullPointerException e) {
+        	
+        }*/
+        try {
+        	if(saveDataList.getSavedList(getActivity(), PREFS_NAME, LIST_OF_SONGS) != null) {
+        		mSongs = saveDataList.getSavedList(getActivity(), PREFS_NAME, LIST_OF_SONGS);
+        		SongLab.get(getActivity()).setSongs(mSongs);
+        		Log.i("keyHere","mSongs set to sdl");
+        		//saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
+        	}
+        }catch(NullPointerException e) {
+        	
+        }
         SongAdapter adapter = new SongAdapter(mSongs);
         setListAdapter(adapter);
         
@@ -106,6 +127,7 @@ public class SongListFragment extends ListFragment {
         	   case R.id.menu_item_new_song :
                 Song song = new Song();
                 SongLab.get(getActivity()).addSong(song);
+                Log.i("keyHere","New Song Put In");
                 
                 Intent i = new Intent(getActivity(), SongActivity.class);
                 //Here we start the CrimeActivity, not the CrimePagerActivity.
@@ -162,12 +184,20 @@ public class SongListFragment extends ListFragment {
         }
     }
     
-    private void storeListData(ArrayList<Song> songList) {
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	Log.d("keyHere","onPause() called");
+    	//saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
+    	/*try{
+    	 if(mSongs != null)
+         	for(int i = 0; i < mSongs.size(); i++)
+         		Log.d("keyHere",mSongs.get(i).getTitle() + "pause");
+         } catch(NullPointerException e) {
+         	
+         }*/
     	
     }
-    
-    private void loadListData(ArrayList<Song> songList) {
-    	
-    }
+
 }
 

@@ -1,6 +1,7 @@
 package com.MobileProgramming.MusicPad;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,6 +31,9 @@ public class SongFragment extends Fragment {
     public static final String EXTRA_SONG_ID = "MusicPad.SONG_ID";
     private static final String DIALOG_DATE = "date";
     private static final int REQUEST_DATE = 0;
+    public static final String PREFS_NAME = "SONG_APP";
+    public static final String LIST_OF_SONGS = "List_of_Songs";
+    SaveDataList saveDataList = new SaveDataList();
     private MediaRecorder mMediaRecorder;
     private MediaPlayer mMediaPlayer;
     String mAudioPath;
@@ -54,18 +58,28 @@ public class SongFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("heyHere", "song fragment created");
         
         UUID songId = (UUID)getArguments().getSerializable(EXTRA_SONG_ID);
         mSong = SongLab.get(getActivity()).getSong(songId);
-
+        
         setHasOptionsMenu(true);
         //Tell fragment manager that this fragment should receive a call to onOptionsItemSelected(...)
         // on behalf of the hosting activity when OS does callback on this method. 
         
-        
-        
     }
     
+    @Override
+    public void onDestroy(){
+    	super.onDestroy();
+    	//saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
+    }
     public void updateDate() {
         mDateButton.setText(mSong.getDate().toString());
     }

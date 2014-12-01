@@ -1,9 +1,11 @@
 package com.MobileProgramming.MusicPad;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 import android.content.Context;
+import android.util.Log;
 
 public class SongLab {
     private ArrayList<Song> mSongs;
@@ -40,6 +42,15 @@ public class SongLab {
 
     public ArrayList<Song> getSongs() {
         return mSongs;
+    }
+    
+    public void setSongs(ArrayList<Song> otherList) {
+    	try {
+    		//Collections.copy(mSongs, otherList);
+    		mSongs = new ArrayList<Song>(otherList);
+    	}catch(IndexOutOfBoundsException ex) {
+    		Log.i("keyHere", "IOOB ex");
+    	}
     }
 
     public void deleteSong(Song c) {
