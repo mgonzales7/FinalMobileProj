@@ -6,5 +6,8 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/gson_lib"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="/Users/Sokomir/Downloads/gson-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/Sokomir/Downloads/gson-2.3.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/Sokomir/Downloads/gson-2.3.1-sources.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
