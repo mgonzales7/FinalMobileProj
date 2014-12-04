@@ -157,8 +157,8 @@ public class SongListFragment extends ListFragment {
     }
 
     private class SongAdapter extends ArrayAdapter<Song> {
-        public SongAdapter(ArrayList<Song> crimes) {
-            super(getActivity(), android.R.layout.simple_list_item_1, crimes);
+        public SongAdapter(ArrayList<Song> songs) {
+            super(getActivity(), android.R.layout.simple_list_item_1, songs);
         }
 
         @Override
@@ -169,7 +169,7 @@ public class SongListFragment extends ListFragment {
                     .inflate(R.layout.list_item_song, null);
             }
 
-            // configure the view for this Crime
+            // configure the view for this Song
             Song c = getItem(position);
 
             TextView titleTextView =

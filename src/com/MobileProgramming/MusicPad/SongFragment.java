@@ -16,7 +16,6 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,8 +53,6 @@ public class SongFragment extends Fragment {
     private boolean isPlaying = false;
     
     SaveDataList saveDataList = new SaveDataList();
-    private MediaRecorder mMediaRecorder;
-    private MediaPlayer mMediaPlayer;
     String mAudioPath;
     Song mSong;
     EditText mTitleField;
@@ -124,7 +121,7 @@ public class SongFragment extends Fragment {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mSong.setTitle(c.toString());
                 mAudioPath=Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+c.toString()
-                        + ".3gp";
+                        + ".wav";
                 Log.i(TAG, c.toString());
                 mSong.setAudioPath(mAudioPath);
             }

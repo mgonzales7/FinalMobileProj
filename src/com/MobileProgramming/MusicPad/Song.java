@@ -5,7 +5,11 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Song implements Serializable{
-    private UUID mId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1106210551407841813L;
+	private UUID mId;
     private String mTitle;
     private String mAudioPath;
     private Date mDate;

@@ -1,7 +1,6 @@
 package com.MobileProgramming.MusicPad;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.UUID;
 
 import android.content.Context;
@@ -11,10 +10,10 @@ public class SongLab {
     private ArrayList<Song> mSongs;
 
     private static SongLab sSongLab;
-    private Context mAppContext;
+   
 
     private SongLab(Context appContext) {
-        mAppContext = appContext;
+        
         
         mSongs = new ArrayList<Song>();
         //Initially, no data in this ArrayList yet. 
