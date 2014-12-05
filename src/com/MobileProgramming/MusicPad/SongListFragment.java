@@ -1,6 +1,7 @@
 package com.MobileProgramming.MusicPad;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -15,6 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,62 +26,42 @@ public class SongListFragment extends ListFragment {
     private ArrayList<Song> mSongs = new ArrayList<Song>();//initialize into nothing;
     public static final String PREFS_NAME = "SONG_APP";
     public static final String LIST_OF_SONGS = "List_of_Songs";
-    SaveDataList saveDataList = new SaveDataList();
+    private static final String LOG_KEY = "keyHere";
+    SaveDataList saveDataList = new SaveDataList(); //used to save list in sharedpref
     
-    //private boolean mSubtitleVisible;
-    //Keeps track the visibility status of the subtitle. 
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("keyHere", "onCreate() called");
+        Log.d(LOG_KEY, "onCreate() called");
         setHasOptionsMenu(true); 
+        //Thanks to Professor for this code
         //FragmentManager is responsible for calling onCreateOptionsMenu()
-        //IMPORTANT. Tell FragmentManager that my CrimeListFragment needs to receive options menu callbacks
+        //IMPORTANT. Tell FragmentManager that my SongListFragment needs to receive options menu callbacks
         // e.g. onCreateOptionsMenu(). 
-        
         getActivity().setTitle(R.string.songs_title);
-       /* mSongs = saveDataList.getSavedList(getActivity(), PREFS_NAME, LIST_OF_SONGS);
+        //
         try {
-        	if(mSongs != null)
-        		for(int i = 0; i < mSongs.size(); i++)
-        			Log.d("keyHere",mSongs.get(i).getTitle());
-        } catch(NullPointerException e) {
-        	
-        }*/
-        try {
-        	if(saveDataList.getSavedList(getActivity(), PREFS_NAME, LIST_OF_SONGS) != null) {
-        		mSongs = saveDataList.getSavedList(getActivity(), PREFS_NAME, LIST_OF_SONGS);
-        		SongLab.get(getActivity()).setSongs(mSongs);
-        		Log.i("keyHere","mSongs set to sdl");
-        		//saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
-        	}
+        	mSongs = saveDataList.getSavedList(getActivity(), PREFS_NAME, LIST_OF_SONGS);
+        	SongLab.get(getActivity()).setSongs(mSongs);
+        	Log.i(LOG_KEY,"mSongs set to sdl");
+        		
         }catch(NullPointerException e) {
         	
         }
+        //update list in listview adapter
         SongAdapter adapter = new SongAdapter(mSongs);
         setListAdapter(adapter);
         
         setRetainInstance(true);
         
-        //a variable to keep track of the visibility state of the subtitle. 
-        //mSubtitleVisible = false;
         
     }
     
     @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = super.onCreateView(inflater, parent, savedInstanceState);
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {   
-        	
-        		//If the user rotates the device, we still need to keep the visibility status of the subtitle. 
-           // if (mSubtitleVisible) {
-           //     getActivity().getActionBar().setSubtitle(R.string.subtitle);
-           // }
-        }
-        
+        View v = super.onCreateView(inflater, parent, savedInstanceState); 
         return v;
     }
 
@@ -86,72 +70,78 @@ public class SongListFragment extends ListFragment {
     	// get the Song from the adapter
         Song s = ((SongAdapter)getListAdapter()).getItem(position);
         
-        // start an instance of CrimePagerActivity
+        // start SongPager
         Intent i = new Intent(getActivity(), SongPagerActivity.class);
         i.putExtra(SongFragment.EXTRA_SONG_ID, s.getId());
         startActivityForResult(i, 0);
     }
 
+    //on back check if data changed
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         ((SongAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
-    //---- method to handle options menu ---
+    //Options Menu Creation (content next time?)
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    	
         super.onCreateOptionsMenu(menu, inflater);
-    
         inflater.inflate(R.menu.fragment_song_list, menu);
-
-        //Some special processing on the "showSubtitle" MenuItem 
-        //
-		//If the user rotates the device, we still need to keep the visibility status of the subtitle, 
-        // and set the correct text on the subtitle. 
-        //MenuItem showSubtitle = menu.findItem(R.id.menu_item_show_subtitle);
-        
-       // if (mSubtitleVisible && showSubtitle != null) {
-        //    showSubtitle.setTitle(R.string.hide_subtitle);
-       // }
     }
 
-    //---- method to handle options menu ---
+    //Options Menu Method
     @TargetApi(11)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {         
-        		//Those menu item IDs are defined in fragment_crime_list.xml file. 
+        		//Those menu item IDs are defined in fragment_song_list.xml file. 
         
-        	   case R.id.menu_item_new_song :
-                Song song = new Song();
-                SongLab.get(getActivity()).addSong(song);
-                Log.i("keyHere","New Song Put In");
+        	//addition of new song
+			case R.id.menu_item_new_song:
+				Song song = new Song();
+				SongLab.get(getActivity()).addSong(song);
+				Log.i(LOG_KEY, "New Song Put In");
+			
+				Intent i = new Intent(getActivity(), SongActivity.class);
+				//open songactivity to create songfragment
+				i.putExtra(SongFragment.EXTRA_SONG_ID, song.getId());
+				startActivityForResult(i, 0);
+				return true;
+				
                 
-                Intent i = new Intent(getActivity(), SongActivity.class);
-                //Here we start the CrimeActivity, not the CrimePagerActivity.
-                
-                i.putExtra(SongFragment.EXTRA_SONG_ID, song.getId());
-                startActivityForResult(i, 0);
-                return true;
-                
-           /* case R.id.menu_item_show_subtitle :
-            		//We want to show different menu text, depending on whether subtitle is currently displayed or not. 
-            		//
-            		//In case the user put the phone in landscape mode, 
-            		//we need to keep the subtitle visible if it is visible in vertical mode.
-            		if (getActivity().getActionBar().getSubtitle() == null) {
-	                    getActivity().getActionBar().setSubtitle(R.string.subtitle);
-	                    mSubtitleVisible = true;
-	                    item.setTitle(R.string.hide_subtitle);
-	            	}  else {
-	            		getActivity().getActionBar().setSubtitle(null);
-	            		 mSubtitleVisible = false;
-	            		item.setTitle(R.string.show_subtitle);
-	            	}
-                return true;*/
+		    //deletion of song(s)
+			case R.id.menu_item_delete_song:
+				SongAdapter adapter = new SongAdapter(mSongs);
+				//iterate through to check which are checked
+				Iterator<Song> it = SongLab.get(getActivity()).getSongs().iterator();
+				while(it.hasNext()) {
+					Song s = it.next();
+					if (s.isChecked()) { //delete if checked
+						it.remove();		
+					}
+				}
+				
+				//save data
+				saveDataList.storeData(getActivity(),SongLab.get(getActivity()).getSongs(), PREFS_NAME,LIST_OF_SONGS);
+
+				try {
+					mSongs = saveDataList.getSavedList(getActivity(),PREFS_NAME, LIST_OF_SONGS);
+					SongLab.get(getActivity()).setSongs(mSongs);
+					Log.i(LOG_KEY, "mSongs set to sdl");
+
+				} catch (NullPointerException e) {
+					// nothing yet
+				}
+				
+				//refresh list 
+				adapter = new SongAdapter(mSongs);
+				setListAdapter(adapter);
+				adapter.notifyDataSetChanged();
+
+				return true;
+              
             
-            default:
+			 default:
                 return super.onOptionsItemSelected(item);
         } 
     }
@@ -170,7 +160,7 @@ public class SongListFragment extends ListFragment {
             }
 
             // configure the view for this Song
-            Song c = getItem(position);
+            final Song c = getItem(position);
 
             TextView titleTextView =
                 (TextView)convertView.findViewById(R.id.crime_list_item_titleTextView);
@@ -178,7 +168,21 @@ public class SongListFragment extends ListFragment {
             TextView dateTextView =
                 (TextView)convertView.findViewById(R.id.crime_list_item_dateTextView);
             dateTextView.setText(c.getDate().toString());
-
+            
+           
+            CheckBox selectBox = 
+            		(CheckBox)convertView.findViewById(R.id.selectCheck);
+            selectBox.setChecked(false); //start off always unchecked
+            selectBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+				public void onCheckedChanged(CompoundButton buttonView,
+						boolean isChecked) {
+					//set checked if checked
+					SongLab.get(getActivity()).getSong(c.getId()).setChecked(isChecked);
+					Log.i(LOG_KEY, "is checked: " + c.isChecked());
+				}
+            });
+            
+            
             return convertView;
         }
     }
@@ -186,7 +190,7 @@ public class SongListFragment extends ListFragment {
     @Override
     public void onPause() {
     	super.onPause();
-    	Log.d("keyHere","onPause() called");
+    	Log.d(LOG_KEY,"onPause() called");
     	//saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
     	/*try{
     	 if(mSongs != null)

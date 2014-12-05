@@ -34,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class SongFragment extends Fragment {
+	private static final String LOG_KEY = "keyHere";
 	private static final String TAG = "audioStuff";
     public static final String EXTRA_SONG_ID = "MusicPad.SONG_ID";
     private static final String DIALOG_DATE = "date";
@@ -75,10 +76,12 @@ public class SongFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("heyHere", "song fragment created");
+        Log.d(LOG_KEY, "song fragment created");
         
         UUID songId = (UUID)getArguments().getSerializable(EXTRA_SONG_ID);
+        SongLab.get(getActivity()).getSong(songId).setChecked(false); //return to default
         mSong = SongLab.get(getActivity()).getSong(songId);
+        Log.i(LOG_KEY,"Frag isChecked? :" + mSong.isChecked());
         
         setHasOptionsMenu(true);
         //Tell fragment manager that this fragment should receive a call to onOptionsItemSelected(...)
@@ -89,7 +92,6 @@ public class SongFragment extends Fragment {
     @Override
     public void onDestroy(){
     	super.onDestroy();
-    	//saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
     }
     
     @Override
@@ -196,15 +198,14 @@ public class SongFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            
+            //Thanks to professor for this code
         	// We don't need to define or inflate the app icon menu item in an XML file. 
-        //It comes with a ready-made resource ID: android.R.id.home
-        		case android.R.id.home :
+        	//It comes with a ready-made resource ID: android.R.id.home
+        	case android.R.id.home :
           	
-        			if (NavUtils.getParentActivityName(getActivity())!=null )
-        				NavUtils.navigateUpFromSameTask(getActivity());
-                //Correspondingly, we need to add meta-data tag in AndroidManifest.xml to specify 
-                // the parent activity of this fragment's hosting activities: CrimeActivity, CrimePagerActivity.
+        		if (NavUtils.getParentActivityName(getActivity())!=null )
+        			NavUtils.navigateUpFromSameTask(getActivity());
+                //Set parent in androidmanifest.xml
                 
                 return true;
             default:
@@ -285,9 +286,9 @@ public class SongFragment extends Fragment {
     public void playAudio (View view) throws IOException{ 
    
     
-    //	playButton.setEnabled(false);
-    //	recordButton.setEnabled(false);
-    //	stopButton.setEnabled(true);
+    	//playButton.setEnabled(false);
+    	//recordButton.setEnabled(false);
+    	//stopButton.setEnabled(true);
     	player= new AudioTrack(AudioManager.STREAM_MUSIC,PLAYBACK_SAMPLERATE,PLAYBACK_CHANNELS, 
     						   RECORDER_AUDIO_ENCODING,BufferElements2Rec*BytesPerElement,
     						   AudioTrack.MODE_STREAM);
@@ -316,7 +317,7 @@ public class SongFragment extends Fragment {
     	    }
     	    dis.close();
     	  }
-    	 catch (  Throwable t) {
+    	 catch (Throwable t) {
     	    Log.e("AudioTrack","Playback Failed");
     	  }
     }

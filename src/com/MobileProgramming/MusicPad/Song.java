@@ -13,6 +13,7 @@ public class Song implements Serializable{
     private String mTitle;
     private String mAudioPath;
     private Date mDate;
+    private boolean isChecked;
 
     public Song() {
         mId = UUID.randomUUID();
@@ -51,6 +52,13 @@ public class Song implements Serializable{
 	public void setAudioPath(String audioPath) {
 		mAudioPath = audioPath;
 	}
-
+	
+	public void setChecked(boolean set) {
+		isChecked = set;
+	}
+	
+	public boolean isChecked() {
+		return isChecked;
+	}
 
 }
