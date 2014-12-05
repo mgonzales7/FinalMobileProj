@@ -1,5 +1,6 @@
 package com.MobileProgramming.MusicPad;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -117,7 +118,13 @@ public class SongListFragment extends ListFragment {
 				while(it.hasNext()) {
 					Song s = it.next();
 					if (s.isChecked()) { //delete if checked
-						it.remove();		
+						//delete song file if it exists
+						if(s.getAudioPath() != null && !s.getAudioPath().isEmpty()){
+							File file = new File(s.getAudioPath());
+							if(file.exists())
+								file.delete();
+						}
+						it.remove(); //remove from song list	
 					}
 				}
 				
