@@ -3,15 +3,14 @@ package com.MobileProgramming.MusicPad;
 import java.util.UUID;
 
 import android.support.v4.app.Fragment;
-import android.view.View;
 import android.widget.MediaController.MediaPlayerControl;
 
 public class SongActivity extends SingleFragmentActivity implements MediaPlayerControl {
 	@Override
     protected Fragment createFragment() {
-        UUID crimeId = (UUID)getIntent()
+        UUID songId = (UUID)getIntent()
             .getSerializableExtra(SongFragment.EXTRA_SONG_ID);
-        return SongFragment.newInstance(crimeId);
+        return SongFragment.newInstance(songId);
     }
 	
 	

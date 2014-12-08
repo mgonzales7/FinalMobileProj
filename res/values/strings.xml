@@ -9,12 +9,11 @@
   <string name="date_picker_title">Date Recorded:</string>
   <string name="songs_title">Songs</string>
   <string name="new_song">New Song</string>
-  <string name="show_subtitle">Show Subtitle</string>
-  <string name="hide_subtitle">Hide Subtitle</string> 
-  <string name="subtitle">Sometimes tolerance is not a virtue.</string>
+  <string name="delete_select">Delete Selected</string>
   <string name="recording">Recording</string>
   <string name="play">Play</string>
   <string name="record">Record</string>
   <string name="stop">Stop</string>
+  <string name="share">Share</string>
   
 </resources>

@@ -13,14 +13,12 @@ public class SongLab {
    
 
     private SongLab(Context appContext) {
-        
-        
         mSongs = new ArrayList<Song>();
         //Initially, no data in this ArrayList yet. 
-        
     }
 
     public static SongLab get(Context c) {
+    	//static context of the class given
         if (sSongLab == null) {
             sSongLab = new SongLab(c.getApplicationContext());
         }
@@ -35,8 +33,20 @@ public class SongLab {
         return null;
     }
     
+    public Song getSong(int index) {
+    	return mSongs.get(index);
+    }
+    
     public void addSong(Song s) {
         mSongs.add(s);
+    }
+    
+    public void deleteSong(int position) {
+        mSongs.remove(position);
+    }
+    
+    public void deleteSong(Song s) {
+        mSongs.remove(s);
     }
 
     public ArrayList<Song> getSongs() {
@@ -45,15 +55,10 @@ public class SongLab {
     
     public void setSongs(ArrayList<Song> otherList) {
     	try {
-    		//Collections.copy(mSongs, otherList);
     		mSongs = new ArrayList<Song>(otherList);
     	}catch(IndexOutOfBoundsException ex) {
     		Log.i("keyHere", "IOOB ex");
     	}
-    }
-
-    public void deleteSong(Song c) {
-        mSongs.remove(c);
     }
 }
 

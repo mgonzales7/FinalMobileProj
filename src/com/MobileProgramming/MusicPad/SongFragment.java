@@ -15,6 +15,7 @@ import android.content.ServiceConnection;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,12 +32,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.MediaController.MediaPlayerControl;
 
 import com.MobileProgramming.MusicPad.MusicService.MusicBinder;
 //import android.media.AudioTrack;
 
-public class SongFragment extends Fragment implements MediaPlayerControl{
+public class SongFragment extends Fragment {
+	private static final String LOG_KEY = "keyHere";
 	private static final String TAG = "audioStuff";
     public static final String EXTRA_SONG_ID = "MusicPad.SONG_ID";
     private static final String DIALOG_DATE = "date";
@@ -67,7 +68,8 @@ public class SongFragment extends Fragment implements MediaPlayerControl{
     Button mRecordButton;
     Button mStopButton;
     Button mPlayButton;
-    private MusicController controller;
+    
+  
     
 
     public static SongFragment newInstance(UUID songId) {
@@ -83,10 +85,12 @@ public class SongFragment extends Fragment implements MediaPlayerControl{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("heyHere", "song fragment created");
+        Log.d(LOG_KEY, "song fragment created");
         
         UUID songId = (UUID)getArguments().getSerializable(EXTRA_SONG_ID);
+        SongLab.get(getActivity()).getSong(songId).setChecked(false); //return to default
         mSong = SongLab.get(getActivity()).getSong(songId);
+        Log.i(LOG_KEY,"Frag isChecked? :" + mSong.isChecked());
         
         setHasOptionsMenu(true);
         //Tell fragment manager that this fragment should receive a call to onOptionsItemSelected(...)
@@ -98,7 +102,6 @@ public class SongFragment extends Fragment implements MediaPlayerControl{
     @Override
     public void onDestroy(){
     	super.onDestroy();
-    	//saveDataList.storeData(getActivity(), SongLab.get(getActivity()).getSongs(), PREFS_NAME, LIST_OF_SONGS);
     }
     
     @Override
@@ -123,7 +126,6 @@ public class SongFragment extends Fragment implements MediaPlayerControl{
         //enable the home-as-up button.
         //This enabled icon is treated as an existing option menu item. 
         
-        setController(v.findViewById(R.id.media_controller));
         
         //mAudioPath=mSong.getAudioPath(); Not needed
         mTitleField = (EditText)v.findViewById(R.id.song_title);
@@ -214,15 +216,14 @@ public class SongFragment extends Fragment implements MediaPlayerControl{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            
+            //Thanks to professor for this code
         	// We don't need to define or inflate the app icon menu item in an XML file. 
-        //It comes with a ready-made resource ID: android.R.id.home
-        		case android.R.id.home :
+        	//It comes with a ready-made resource ID: android.R.id.home
+        	case android.R.id.home :
           	
-        			if (NavUtils.getParentActivityName(getActivity())!=null )
-        				NavUtils.navigateUpFromSameTask(getActivity());
-                //Correspondingly, we need to add meta-data tag in AndroidManifest.xml to specify 
-                // the parent activity of this fragment's hosting activities: CrimeActivity, CrimePagerActivity.
+        		if (NavUtils.getParentActivityName(getActivity())!=null )
+        			NavUtils.navigateUpFromSameTask(getActivity());
+                //Set parent in androidmanifest.xml
                 
                 return true;
             default:
@@ -307,43 +308,7 @@ public class SongFragment extends Fragment implements MediaPlayerControl{
     }
     public void playAudio (View view) throws IOException{ 
     	startService(view);
-    	controller.show();
-   /*
-    
-    //	playButton.setEnabled(false);
-    //	recordButton.setEnabled(false);
-    //	stopButton.setEnabled(true);
-    	player= new AudioTrack(AudioManager.STREAM_MUSIC,PLAYBACK_SAMPLERATE,PLAYBACK_CHANNELS, 
-    						   RECORDER_AUDIO_ENCODING,BufferElements2Rec*BytesPerElement,
-    						   AudioTrack.MODE_STREAM);
-    	player.play();
-    	isPlaying=true;
-    	playbackThread=new Thread(new Runnable() {
-    		public void run(){
-    			retrieveAudio();
-    		}
-    	}, "Playback Thread");
-    	playbackThread.start();
-    	
-    }
-    private void retrieveAudio(){
-    	int bufferSize = BufferElements2Rec*BytesPerElement;
-    	 byte[] audiodata=new byte[bufferSize / 4];
-    	  try {
-    	    DataInputStream dis=new DataInputStream(new BufferedInputStream(new FileInputStream(mSong.getAudioPath())));
-    	    while (isPlaying && dis.available() > 0) {
-    	      int i=0;
-    	      while (dis.available() > 0 && i < audiodata.length) {
-    	        audiodata[i]=dis.readByte();
-    	        i++;
-    	      }
-    	      player.write(audiodata,0,audiodata.length);
-    	    }
-    	    dis.close();
-    	  }
-    	 catch (  Throwable t) {
-    	    Log.e("AudioTrack","Playback Failed");
-    	    }*/
+  
     	
     	  }
   //connect to the service
@@ -372,67 +337,8 @@ public class SongFragment extends Fragment implements MediaPlayerControl{
     	getActivity().stopService(new Intent(getActivity().getBaseContext(), MusicService.class));
     }
     
-   private void setController(View v){
-		controller = new MusicController(getActivity());//set the controller up
-		controller.setMediaPlayer(this);
-		controller.setAnchorView(v);
-		controller.setEnabled(true);
-	}
-   
-  @Override
-   public void pause() {
-     musicSrv.pausePlayer();
-   }
     
-  @Override
-   public void seekTo(int pos) {
-     musicSrv.seek(pos);
-   }
-    
-   @Override
-   public void start() {
-     musicSrv.go();
-   }
 
-@Override
-public int getDuration() {
-	return musicSrv.getDur();
-}
-
-@Override
-public int getCurrentPosition() {
-	return musicSrv.getPosn();
-	
-}
-
-@Override
-public boolean isPlaying() {
-	return musicSrv.isPng();
-}
-
-@Override
-public int getBufferPercentage() {
-	// TODO Auto-generated method stub
-	return 0;
-}
-
-@Override
-public boolean canPause() {
-	// TODO Auto-generated method stub
-	return true;
-}
-
-@Override
-public boolean canSeekBackward() {
-	// TODO Auto-generated method stub
-	return false;
-}
-
-@Override
-public boolean canSeekForward() {
-	// TODO Auto-generated method stub
-	return false;
-}
 
 }
  
