@@ -56,6 +56,10 @@
       
       
   </LinearLayout>
+  <MediaController android:id="@+id/media_controller"
+    android:layout_width="fill_parent"
+    android:layout_height="200dp"
+    android:visibility="visible"/>
 </LinearLayout>
 
 

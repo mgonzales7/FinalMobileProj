@@ -1,8 +1,5 @@
 package com.MobileProgramming.MusicPad;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,15 +8,17 @@ import java.util.UUID;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -32,8 +31,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.MediaController.MediaPlayerControl;
 
-public class SongFragment extends Fragment {
+import com.MobileProgramming.MusicPad.MusicService.MusicBinder;
+//import android.media.AudioTrack;
+
+public class SongFragment extends Fragment implements MediaPlayerControl{
 	private static final String TAG = "audioStuff";
     public static final String EXTRA_SONG_ID = "MusicPad.SONG_ID";
     private static final String DIALOG_DATE = "date";
@@ -43,14 +46,18 @@ public class SongFragment extends Fragment {
     private static final int RECORDER_SAMPLERATE = 44100;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-    private static final int PLAYBACK_CHANNELS = AudioFormat.CHANNEL_OUT_MONO;
-    private static final int PLAYBACK_SAMPLERATE = 44100;
+   // private static final int PLAYBACK_CHANNELS = AudioFormat.CHANNEL_OUT_MONO;
+   // private static final int PLAYBACK_SAMPLERATE = 44100;
     private AudioRecord recorder=null;
-    private AudioTrack player=null;
+   // private AudioTrack player=null;
     private Thread recordingThread = null;
-    private Thread playbackThread = null;
+   // private Thread playbackThread = null;
     private boolean isRecording = false;
-    private boolean isPlaying = false;
+   // private boolean isPlaying = false;
+    private boolean musicBound=false;
+    
+    MusicService musicSrv;
+    Intent i;
     
     SaveDataList saveDataList = new SaveDataList();
     String mAudioPath;
@@ -60,6 +67,7 @@ public class SongFragment extends Fragment {
     Button mRecordButton;
     Button mStopButton;
     Button mPlayButton;
+    private MusicController controller;
     
 
     public static SongFragment newInstance(UUID songId) {
@@ -83,6 +91,7 @@ public class SongFragment extends Fragment {
         setHasOptionsMenu(true);
         //Tell fragment manager that this fragment should receive a call to onOptionsItemSelected(...)
         // on behalf of the hosting activity when OS does callback on this method. 
+        
         
     }
     
@@ -114,6 +123,8 @@ public class SongFragment extends Fragment {
         //enable the home-as-up button.
         //This enabled icon is treated as an existing option menu item. 
         
+        setController(v.findViewById(R.id.media_controller));
+        
         //mAudioPath=mSong.getAudioPath(); Not needed
         mTitleField = (EditText)v.findViewById(R.id.song_title);
         mTitleField.setText(mSong.getTitle());
@@ -121,7 +132,7 @@ public class SongFragment extends Fragment {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mSong.setTitle(c.toString());
                 mAudioPath=Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+c.toString()
-                        + ".wav";
+                        + ".pcm";
                 Log.i(TAG, c.toString());
                 mSong.setAudioPath(mAudioPath);
             }
@@ -176,8 +187,15 @@ public class SongFragment extends Fragment {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+        		
         	}
+        	
         });
+        
+        
+    	
+    	
+   
        
         return v; 
     }
@@ -236,6 +254,10 @@ public class SongFragment extends Fragment {
     	recordingThread=new Thread(new Runnable() {
     		public void run(){
     			writeAudioDataToFile();
+    		//	wavIO convert;
+    			/*convert= new wavIO(mSong.getAudioPath());
+    			convert.read();
+        		convert.save();*/
     		}
     	}, "AudioRecorder Thread");
     	recordingThread.start();
@@ -280,10 +302,13 @@ public class SongFragment extends Fragment {
     		recorder.release();
     		recorder = null;
     		recordingThread= null;
+    		
     	}
     }
     public void playAudio (View view) throws IOException{ 
-   
+    	startService(view);
+    	controller.show();
+   /*
     
     //	playButton.setEnabled(false);
     //	recordButton.setEnabled(false);
@@ -318,7 +343,97 @@ public class SongFragment extends Fragment {
     	  }
     	 catch (  Throwable t) {
     	    Log.e("AudioTrack","Playback Failed");
+    	    }*/
+    	
     	  }
+  //connect to the service
+    private ServiceConnection musicConnection = new ServiceConnection(){
+      @Override
+      public void onServiceConnected(ComponentName name, IBinder service) {
+        MusicBinder binder = (MusicBinder)service;
+        //get service
+        musicSrv = binder.getService();
+        //pass list
+        musicBound = true;
+        musicSrv.setSong(mSong);
+      }
+      @Override
+      public void onServiceDisconnected(ComponentName name) {
+        musicBound = false;
+      }
+    };
+    public void startService(View view) {
+        //startService(  new Intent(getBaseContext(), MyService.class)   ); //works
+     getActivity().bindService(new Intent(getActivity(), MusicService.class), musicConnection, Context.BIND_AUTO_CREATE); 
+	 getActivity().startService(new Intent(getActivity(), MusicService.class)   ); //works
     }
- }
+    
+    public void stopService(View view) {
+    	getActivity().stopService(new Intent(getActivity().getBaseContext(), MusicService.class));
+    }
+    
+   private void setController(View v){
+		controller = new MusicController(getActivity());//set the controller up
+		controller.setMediaPlayer(this);
+		controller.setAnchorView(v);
+		controller.setEnabled(true);
+	}
+   
+  @Override
+   public void pause() {
+     musicSrv.pausePlayer();
+   }
+    
+  @Override
+   public void seekTo(int pos) {
+     musicSrv.seek(pos);
+   }
+    
+   @Override
+   public void start() {
+     musicSrv.go();
+   }
+
+@Override
+public int getDuration() {
+	return musicSrv.getDur();
+}
+
+@Override
+public int getCurrentPosition() {
+	return musicSrv.getPosn();
+	
+}
+
+@Override
+public boolean isPlaying() {
+	return musicSrv.isPng();
+}
+
+@Override
+public int getBufferPercentage() {
+	// TODO Auto-generated method stub
+	return 0;
+}
+
+@Override
+public boolean canPause() {
+	// TODO Auto-generated method stub
+	return true;
+}
+
+@Override
+public boolean canSeekBackward() {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+@Override
+public boolean canSeekForward() {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+}
+ 
 

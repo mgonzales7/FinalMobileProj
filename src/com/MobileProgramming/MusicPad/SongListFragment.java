@@ -22,6 +22,8 @@ public class SongListFragment extends ListFragment {
     private ArrayList<Song> mSongs = new ArrayList<Song>();//initialize into nothing;
     public static final String PREFS_NAME = "SONG_APP";
     public static final String LIST_OF_SONGS = "List_of_Songs";
+    MusicService serviceBinder;
+    Intent i;
     SaveDataList saveDataList = new SaveDataList();
     
     //private boolean mSubtitleVisible;
@@ -197,6 +199,18 @@ public class SongListFragment extends ListFragment {
          }*/
     	
     }
+ public void startService(View view) {
+        //startService(  new Intent(getBaseContext(), MyService.class)   ); //works
+	 getActivity().startService(new Intent(getActivity(), MusicService.class)   ); //works
+    }
+    
+    public void stopService(View view) {
+    	getActivity().stopService(new Intent(getActivity().getBaseContext(), MusicService.class));
+    }
+
+    
 
 }
+
+
 

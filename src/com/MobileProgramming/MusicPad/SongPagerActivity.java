@@ -32,14 +32,14 @@ public class SongPagerActivity extends FragmentActivity {
             }
             @Override
             public Fragment getItem(int pos) {
-                UUID crimeId =  songs.get(pos).getId();
-                return SongFragment.newInstance(crimeId);
+                UUID songId =  songs.get(pos).getId();
+                return SongFragment.newInstance(songId);
             }
         }); 
 
-        UUID crimeId = (UUID)getIntent().getSerializableExtra(SongFragment.EXTRA_SONG_ID);
+        UUID songId = (UUID)getIntent().getSerializableExtra(SongFragment.EXTRA_SONG_ID);
         for (int i = 0; i < songs.size(); i++) {
-            if (songs.get(i).getId().equals(crimeId)) {
+            if (songs.get(i).getId().equals(songId)) {
                 mViewPager.setCurrentItem(i);
                 break;
             } 

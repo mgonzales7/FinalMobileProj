@@ -13,13 +13,15 @@ public final class R {
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
         public static final int music_padicon=0x7f020001;
+        public static final int play=0x7f020002;
     }
     public static final class id {
-        public static final int crime_list_item_dateTextView=0x7f040009;
-        public static final int crime_list_item_titleTextView=0x7f040008;
+        public static final int crime_list_item_dateTextView=0x7f04000a;
+        public static final int crime_list_item_titleTextView=0x7f040009;
         public static final int dialog_date_datePicker=0x7f040002;
         public static final int fragmentContainer=0x7f040001;
-        public static final int menu_item_new_song=0x7f04000a;
+        public static final int media_controller=0x7f040008;
+        public static final int menu_item_new_song=0x7f04000b;
         public static final int playButton=0x7f040006;
         public static final int recordButton=0x7f040005;
         public static final int song_date=0x7f040004;
