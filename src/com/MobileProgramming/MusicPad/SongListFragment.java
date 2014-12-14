@@ -4,12 +4,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.IntentFilter;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.os.Build;
+import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.nfc.NfcEvent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,12 +30,15 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SongListFragment extends ListFragment {
     private ArrayList<Song> mSongs = new ArrayList<Song>();//initialize into nothing;
     public static final String PREFS_NAME = "SONG_APP";
     public static final String LIST_OF_SONGS = "List_of_Songs";
     NfcAdapter mNfcAdapter;
+    PendingIntent mNfcPendingIntent;
+    IntentFilter mNdefExchangeFilters[];
     // Flag to indicate that Android Beam is available
     boolean mAndroidBeamAvailable  = false;
 
@@ -42,7 +51,7 @@ public class SongListFragment extends ListFragment {
 
     
     
-    @Override
+    @SuppressLint("NewApi") @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_KEY, "onCreate() called");
@@ -62,10 +71,35 @@ public class SongListFragment extends ListFragment {
         	
         }
         //update list in listview adapter
+        if(mSongs!=null){
         SongAdapter adapter = new SongAdapter(mSongs);
-        setListAdapter(adapter);
-        
+        	setListAdapter(adapter);
+        }
+        else{
+        	mSongs = SongLab.get(getActivity()).getSongs();
+        	SongAdapter adapter = new SongAdapter(mSongs);
+        	setListAdapter(adapter);
+        }
         setRetainInstance(true);
+        
+        NfcAdapter mAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+        if (mAdapter == null) {
+            return;
+        }
+ 
+        if (!mAdapter.isEnabled()) {
+            Toast.makeText(getActivity(), "Please enable NFC via Settings.", Toast.LENGTH_LONG).show();
+        }
+ 
+        mAdapter.setNdefPushMessageCallback(new CreateNdefMessageCallback(){
+
+			@Override
+			public NdefMessage createNdefMessage(NfcEvent event) {
+				String message = "Hello World";
+			     NdefRecord ndefRecord = NdefRecord.createMime("text/plain", message.getBytes());
+			     NdefMessage ndefMessage = new NdefMessage(ndefRecord);
+			     return ndefMessage;
+			}}, getActivity(), getActivity());
      
         
    } 
@@ -162,7 +196,18 @@ public class SongListFragment extends ListFragment {
 			
 				
 			case R.id.share:
-				return false;
+				 Intent intent = getActivity().getIntent();
+			     if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+			         Parcelable[] rawMessages = intent.getParcelableArrayExtra(
+			                 NfcAdapter.EXTRA_NDEF_MESSAGES);
+			 
+			         NdefMessage message = (NdefMessage) rawMessages[0]; // only one message transferred
+			         Toast.makeText(getActivity(), new String(message.getRecords()[0].getPayload()), Toast.LENGTH_LONG).show();
+			 
+			     } else
+			         Toast.makeText(getActivity(), "Waiting for NDEF Message", Toast.LENGTH_LONG).show();
+			     return true;
+			 
 			
               
             
@@ -236,6 +281,13 @@ public class SongListFragment extends ListFragment {
     }
 
     
+    @SuppressLint("NewApi") 
+    public NdefMessage createNdefMessage(NfcEvent nfcEvent) {
+        String message = "test";
+        NdefRecord ndefRecord = NdefRecord.createMime("text/plain", message.getBytes());
+        NdefMessage ndefMessage = new NdefMessage(ndefRecord);
+        return ndefMessage;
+    }
 
 }
 

@@ -14,6 +14,9 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
         public static final int music_padicon=0x7f020001;
         public static final int play=0x7f020002;
+        public static final int record=0x7f020003;
+        public static final int recorddusheddisabled=0x7f020004;
+        public static final int recordnormal=0x7f020005;
     }
     public static final class id {
         public static final int crime_list_item_dateTextView=0x7f04000a;
@@ -24,11 +27,11 @@ public final class R {
         public static final int menu_item_new_song=0x7f04000c;
         public static final int playButton=0x7f040006;
         public static final int recordButton=0x7f040005;
+        public static final int seekBar1=0x7f040007;
         public static final int selectCheck=0x7f040008;
         public static final int share=0x7f04000b;
         public static final int song_date=0x7f040004;
         public static final int song_title=0x7f040003;
-        public static final int stopButton=0x7f040007;
         public static final int viewPager=0x7f040000;
     }
     public static final class layout {
@@ -50,8 +53,10 @@ public final class R {
         public static final int record=0x7f05000b;
         public static final int recording=0x7f050009;
         public static final int share=0x7f05000d;
+        public static final int song_date=0x7f05000f;
         public static final int song_details_label=0x7f050003;
         public static final int song_solved_label=0x7f050004;
+        public static final int song_title=0x7f05000e;
         public static final int song_title_hint=0x7f050001;
         public static final int song_title_label=0x7f050002;
         public static final int songs_title=0x7f050006;

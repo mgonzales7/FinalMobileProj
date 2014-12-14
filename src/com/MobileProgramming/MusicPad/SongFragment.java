@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -15,7 +16,6 @@ import android.content.ServiceConnection;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,6 +32,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 
 import com.MobileProgramming.MusicPad.MusicService.MusicBinder;
 //import android.media.AudioTrack;
@@ -44,9 +47,10 @@ public class SongFragment extends Fragment {
     private static final int REQUEST_DATE = 0;
     public static final String PREFS_NAME = "SONG_APP";
     public static final String LIST_OF_SONGS = "List_of_Songs";
-    private static final int RECORDER_SAMPLERATE = 44100;
+    private static final int RECORDER_SAMPLERATE =22050;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+    int sampleSeek = 22050;
    // private static final int PLAYBACK_CHANNELS = AudioFormat.CHANNEL_OUT_MONO;
    // private static final int PLAYBACK_SAMPLERATE = 44100;
     private AudioRecord recorder=null;
@@ -55,7 +59,8 @@ public class SongFragment extends Fragment {
    // private Thread playbackThread = null;
     private boolean isRecording = false;
    // private boolean isPlaying = false;
-    private boolean musicBound=false;
+	private boolean musicBound=false;
+    private SeekBar seekBar;
     
     MusicService musicSrv;
     Intent i;
@@ -164,37 +169,68 @@ public class SongFragment extends Fragment {
         mRecordButton = (Button)v.findViewById(R.id.recordButton);
         mRecordButton.setOnClickListener(new View.OnClickListener() {
 			
-			public void onClick(View v) {
-				try {
-					recordAudio(v);
-				} catch (IOException e) {
-					e.printStackTrace();
+			@SuppressLint("NewApi") public void onClick(View v) {
+				if(mSong.getAudioPath()!=null){
+					if(!isRecording){
+						try {
+							recordAudio(v);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					
+						mRecordButton.setBackground(getResources().getDrawable(R.drawable.recorddusheddisabled));
+					}
+					else if (isRecording) {
+						stopClicked(v);
+						mRecordButton.setBackground(getResources().getDrawable(R.drawable.recordnormal));
+					}
 				}
-				
+				else{
+					Toast.makeText(getActivity(), "Please Enter Song Name First", Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
-        mStopButton =(Button)v.findViewById(R.id.stopButton);
-        mStopButton.setOnClickListener(new View.OnClickListener() {
-			
-			public void onClick(View v) {
-				stopClicked(v);
-			}
-		});
+        
+       
         mPlayButton =(Button)v.findViewById(R.id.playButton);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
         	
         	public void onClick(View v) {
+        		musicBound=true;
         		try {
 					playAudio(v);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
         		
+        		
         	}
         	
         });
         
-        
+        seekBar = (SeekBar) v.findViewById(R.id.seekBar1);
+        seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+        	          int progress = 0;
+        	          @Override
+        	          public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
+        	              progress = progresValue;
+        	           
+        	              playbackrate(progress+11000);
+        	          }
+        	          		
+        	          @Override
+        	          public void onStartTrackingTouch(SeekBar seekBar) {
+        	          
+        	        	  
+        	          }
+        	          @Override
+        	          public void onStopTrackingTouch(SeekBar seekBar) {
+        	        	  playbackrate(progress+11000);
+        	       
+        	          }
+        	       });
+        seekBar.setEnabled(true);
     	
     	
    
@@ -308,6 +344,7 @@ public class SongFragment extends Fragment {
     }
     public void playAudio (View view) throws IOException{ 
     	startService(view);
+    	
   
     	
     	  }
@@ -321,6 +358,7 @@ public class SongFragment extends Fragment {
         //pass list
         musicBound = true;
         musicSrv.setSong(mSong);
+        musicSrv.playbackrate(sampleSeek);
       }
       @Override
       public void onServiceDisconnected(ComponentName name) {
@@ -337,6 +375,15 @@ public class SongFragment extends Fragment {
     	getActivity().stopService(new Intent(getActivity().getBaseContext(), MusicService.class));
     }
     
+    private void playbackrate(int rate) {
+    	if (!musicBound){
+    		sampleSeek=rate;
+    	}
+    	else{
+    	sampleSeek=rate;
+    	musicSrv.playbackrate(rate);
+    	}
+    }
     
 
 

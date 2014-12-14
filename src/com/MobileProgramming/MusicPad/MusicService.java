@@ -20,11 +20,10 @@ public class MusicService extends Service {
 	
 	private AudioTrack player;
 	private Song mSong;
-	private int songPosn;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
     private static final int PLAYBACK_CHANNELS = AudioFormat.CHANNEL_OUT_MONO;
-    private static final int PLAYBACK_SAMPLERATE = 44100;
-    private int BufferElements2Rec=1024;
+    private int PLAYBACK_SAMPLERATE = 22050;
+    private int BufferElements2Rec=1600;
     private int BytesPerElement = 2;
     private Thread playbackThread = null;
     private boolean isPlaying = false;
@@ -70,6 +69,7 @@ public class MusicService extends Service {
 	    	player= new AudioTrack(AudioManager.STREAM_MUSIC,PLAYBACK_SAMPLERATE,PLAYBACK_CHANNELS, 
 	    						   RECORDER_AUDIO_ENCODING,BufferElements2Rec*BytesPerElement,
 	    						   AudioTrack.MODE_STREAM);
+	    	player.setPlaybackRate(PLAYBACK_SAMPLERATE);
 	    	player.play();
 	    	isPlaying=true;
 	    	playbackThread=new Thread(new Runnable() {
@@ -122,5 +122,15 @@ public class MusicService extends Service {
 	    	public void go(){
 	    	  player.play();
 	    	}
+	    	
+	    	public void playbackrate(int rate) {
+	    		if(isPlaying){
+	    			player.setPlaybackRate(rate);
+	    			PLAYBACK_SAMPLERATE=rate;
+	    		}
+	    		else{
+	    			PLAYBACK_SAMPLERATE=rate;
+	    		}
+	        }
 	 }
 
